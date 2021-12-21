@@ -14,7 +14,7 @@ class PassengerRepository @Inject constructor(
 ) : Repository {
 
     override suspend fun getPassengers(): List<PassengerModel> {
-        return passengerAPI.getPassengers(page = 10, size = 5).data.map {
+        return passengerAPI.getPassengers(page = 10, size = 15).data.map {
             passengerMapper.mapResponseToModel(
                 it
             )

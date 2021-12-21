@@ -36,6 +36,14 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+
+    kapt {
+        correctErrorTypes = true
+    }
+
+    viewBinding {
+        isEnabled = true
+    }
 }
 
 dependencies {
@@ -70,4 +78,11 @@ dependencies {
     val coroutines = "1.5.1"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines")
+
+    val epoxy = "4.6.3"
+    kapt("com.airbnb.android:epoxy-processor:$epoxy")
+    implementation("com.airbnb.android:epoxy:$epoxy")
+
+    val coil = "1.4.0"
+    implementation("io.coil-kt:coil:$coil")
 }
