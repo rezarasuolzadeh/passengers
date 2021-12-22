@@ -13,12 +13,23 @@ class PassengerRepository @Inject constructor(
     private val passengerMapper: PassengerMapper
 ) : Repository {
 
+    private var passengers = ArrayList<PassengerModel>()
+    private var currentPage = 0
+
     override suspend fun getPassengers(): List<PassengerModel> {
-        return passengerAPI.getPassengers(page = 10, size = 15).data.map {
-            passengerMapper.mapResponseToModel(
-                it
-            )
-        }
+        passengers.addAll(
+            passengerAPI.getPassengers(page = currentPage, size = PAGE_SIZE).data.map {
+                passengerMapper.mapResponseToModel(
+                    it
+                )
+            }
+        )
+        currentPage ++
+        return passengers
+    }
+
+    companion object {
+        const val PAGE_SIZE = 10
     }
 
 }

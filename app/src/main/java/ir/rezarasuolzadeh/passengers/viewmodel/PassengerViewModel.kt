@@ -15,10 +15,6 @@ class PassengerViewModel @Inject constructor(
     private val repository: PassengerRepository,
 ) : BaseViewModel() {
 
-//    init {
-//        fetchPassengers()
-//    }
-
     private val passengers = MutableLiveData<List<PassengerModel>>()
     val passengersLiveData: LiveData<List<PassengerModel>>
         get() = passengers

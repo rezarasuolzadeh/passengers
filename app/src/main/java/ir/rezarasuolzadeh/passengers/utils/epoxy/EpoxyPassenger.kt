@@ -4,11 +4,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import ir.rezarasuolzadeh.passengers.R
 import ir.rezarasuolzadeh.passengers.model.PassengerModel
+import ir.rezarasuolzadeh.passengers.utils.base.BaseEpoxy
 import ir.rezarasuolzadeh.passengers.utils.extensions.loadImage
 
 class EpoxyPassenger(
     private val passenger: PassengerModel
-) : KotlinModel(R.layout.epoxy_passenger) {
+) : BaseEpoxy(R.layout.epoxy_passenger) {
 
     private val airlineImage by bind<ImageView>(R.id.airline_image)
     private val nameText by bind<TextView>(R.id.name_text)

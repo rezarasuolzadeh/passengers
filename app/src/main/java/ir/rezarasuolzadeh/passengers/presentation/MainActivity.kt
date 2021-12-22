@@ -5,18 +5,20 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.epoxy.EpoxyVisibilityTracker
 import dagger.hilt.android.AndroidEntryPoint
 import ir.rezarasuolzadeh.passengers.databinding.ActivityMainBinding
 import ir.rezarasuolzadeh.passengers.model.PassengerModel
-import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyPassengerController
+import ir.rezarasuolzadeh.passengers.utils.base.BaseEpoxy
+import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyLoading
+import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyPassenger
+import ir.rezarasuolzadeh.passengers.utils.extensions.withLoadMore
 import ir.rezarasuolzadeh.passengers.viewmodel.PassengerViewModel
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: PassengerViewModel by viewModels()
-
-    private val controller by lazy { EpoxyPassengerController() }
 
     private lateinit var binding: ActivityMainBinding
 
@@ -33,18 +35,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configEpoxy() {
-        binding.passengerList.apply {
-            adapter = controller.adapter
-            binding.passengerList.layoutManager = LinearLayoutManager(
-                this@MainActivity,
-                RecyclerView.VERTICAL,
-                false
-            )
-        }
+        binding.passengerList.layoutManager = LinearLayoutManager(
+            this@MainActivity,
+            RecyclerView.VERTICAL,
+            false
+        )
+        EpoxyVisibilityTracker().attach(binding.passengerList)
     }
 
     private fun observePassengers(passengers: List<PassengerModel>) {
-        controller.setData(passengers)
+        binding.passengerList.withModels {
+            // passenger view holder
+            val models = passengers.map { passenger ->
+                EpoxyPassenger(passenger).apply {
+                    id(passenger.id)
+                }
+            }
+            withLoadMore(models, 5) {
+                viewModel.fetchPassengers()
+            }
+
+            // loading view holder
+            EpoxyLoading().apply {
+                id("loading")
+            }.addTo(this)
+        }
     }
 
 }

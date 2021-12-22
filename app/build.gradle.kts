@@ -85,4 +85,7 @@ dependencies {
 
     val coil = "1.4.0"
     implementation("io.coil-kt:coil:$coil")
+
+    val lottie = "4.2.1"
+    implementation("com.airbnb.android:lottie:$lottie")
 }
