@@ -1,6 +1,7 @@
-package ir.rezarasuolzadeh.passengers.presentation
+package ir.rezarasuolzadeh.passengers.view
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,7 +10,6 @@ import com.airbnb.epoxy.EpoxyVisibilityTracker
 import dagger.hilt.android.AndroidEntryPoint
 import ir.rezarasuolzadeh.passengers.databinding.ActivityMainBinding
 import ir.rezarasuolzadeh.passengers.model.PassengerModel
-import ir.rezarasuolzadeh.passengers.utils.base.BaseEpoxy
 import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyLoading
 import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyPassenger
 import ir.rezarasuolzadeh.passengers.utils.extensions.withLoadMore
@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observePassengers(passengers: List<PassengerModel>) {
+        binding.loadingView.visibility = View.GONE
+        binding.passengerList.visibility = View.VISIBLE
         binding.passengerList.withModels {
             // passenger view holder
             val models = passengers.map { passenger ->

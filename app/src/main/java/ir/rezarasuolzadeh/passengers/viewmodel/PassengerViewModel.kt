@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.rezarasuolzadeh.passengers.model.PassengerModel
 import ir.rezarasuolzadeh.passengers.repository.PassengerRepository
 import ir.rezarasuolzadeh.passengers.utils.base.BaseViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,6 +21,7 @@ class PassengerViewModel @Inject constructor(
         get() = passengers
 
     fun fetchPassengers() = viewModelScope.launch(exceptionHandler) {
+        delay(3000)
         passengers.value = (repository.getPassengers())
     }
 
