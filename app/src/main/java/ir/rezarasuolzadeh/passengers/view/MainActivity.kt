@@ -12,6 +12,7 @@ import ir.rezarasuolzadeh.passengers.databinding.ActivityMainBinding
 import ir.rezarasuolzadeh.passengers.model.PassengerModel
 import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyLoading
 import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyPassenger
+import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyRetry
 import ir.rezarasuolzadeh.passengers.utils.extensions.withLoadMore
 import ir.rezarasuolzadeh.passengers.viewmodel.PassengerViewModel
 
@@ -30,6 +31,8 @@ class MainActivity : AppCompatActivity() {
         configEpoxy()
 
         viewModel.passengersLiveData.observe(this, ::observePassengers)
+        viewModel.errorLiveData.observe(this, ::observeFailed)
+        viewModel.loadingLiveData.observe(this, ::observeLoading)
 
         viewModel.fetchPassengers()
     }
@@ -46,21 +49,44 @@ class MainActivity : AppCompatActivity() {
     private fun observePassengers(passengers: List<PassengerModel>) {
         binding.loadingView.visibility = View.GONE
         binding.passengerList.visibility = View.VISIBLE
-        binding.passengerList.withModels {
-            // passenger view holder
-            val models = passengers.map { passenger ->
-                EpoxyPassenger(passenger).apply {
-                    id(passenger.id)
+        configEpoxyItems(passengers = passengers)
+    }
+
+    private fun observeFailed(isFailed: Boolean) {
+        configEpoxyItems(passengers = viewModel.passengersLiveData.value, failed = isFailed)
+    }
+
+    private fun observeLoading(isLoading: Boolean) {
+        configEpoxyItems(passengers = viewModel.passengersLiveData.value, failed = !isLoading)
+    }
+
+    private fun configEpoxyItems(passengers: List<PassengerModel>?, failed: Boolean = false) {
+        passengers?.let {
+            binding.passengerList.withModels {
+                // passenger view holder
+                val models = passengers.map { passenger ->
+                    EpoxyPassenger(passenger).apply {
+                        id(passenger.id)
+                    }
+                }
+                withLoadMore(models, 5) {
+                    viewModel.fetchPassengers()
+                }
+
+                if (failed) {
+                    // retry view holder
+                    EpoxyRetry().setClickActionsCallBack {
+                        viewModel.retryFetchPassengers()
+                    }.apply {
+                        id("retry")
+                    }.addTo(this)
+                } else {
+                    // loading view holder
+                    EpoxyLoading().apply {
+                        id("loading")
+                    }.addTo(this)
                 }
             }
-            withLoadMore(models, 5) {
-                viewModel.fetchPassengers()
-            }
-
-            // loading view holder
-            EpoxyLoading().apply {
-                id("loading")
-            }.addTo(this)
         }
     }
 

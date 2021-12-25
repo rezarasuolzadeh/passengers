@@ -20,9 +20,18 @@ class PassengerViewModel @Inject constructor(
     val passengersLiveData: LiveData<List<PassengerModel>>
         get() = passengers
 
+    private val loading = MutableLiveData(false)
+    val loadingLiveData: LiveData<Boolean>
+        get() = loading
+
     fun fetchPassengers() = viewModelScope.launch(exceptionHandler) {
         delay(3000)
         passengers.value = (repository.getPassengers())
+    }
+
+    fun retryFetchPassengers() = viewModelScope.launch(exceptionHandler) {
+        loading.value = true
+        fetchPassengers()
     }
 
 }

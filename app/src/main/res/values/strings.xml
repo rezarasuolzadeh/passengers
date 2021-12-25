@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Passengers</string>
     <string name="ticket_id">Ticket id: %1$s</string>
+    <string name="retry">Retry</string>
 </resources>

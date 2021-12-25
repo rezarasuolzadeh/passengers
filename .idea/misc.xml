@@ -3,9 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/drawable/background_round_button.xml" value="0.1527777777777778" />
+        <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/drawable/background_round_button_color.xml" value="0.1527777777777778" />
+        <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1527777777777778" />
+        <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/layout/epoxy_loading.xml" value="0.25" />
         <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/layout/epoxy_passenger.xml" value="0.13703703703703704" />
+        <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/layout/epoxy_retry.xml" value="0.4" />
         <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/layout/item_task.xml" value="0.2" />
         <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/layout/toolbar_main.xml" value="0.25" />
         <entry key="..\:/programming/programming projects/android projects/Passengers/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.15833333333333333" />
