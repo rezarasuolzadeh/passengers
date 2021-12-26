@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyVisibilityTracker
@@ -14,7 +15,9 @@ import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyLoading
 import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyPassenger
 import ir.rezarasuolzadeh.passengers.utils.epoxy.EpoxyRetry
 import ir.rezarasuolzadeh.passengers.utils.extensions.withLoadMore
+import ir.rezarasuolzadeh.passengers.utils.state.ApiState
 import ir.rezarasuolzadeh.passengers.viewmodel.PassengerViewModel
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -30,11 +33,34 @@ class MainActivity : AppCompatActivity() {
 
         configEpoxy()
 
-        viewModel.passengersLiveData.observe(this, ::observePassengers)
-        viewModel.errorLiveData.observe(this, ::observeFailed)
-        viewModel.loadingLiveData.observe(this, ::observeLoading)
+        configStates()
 
         viewModel.fetchPassengers()
+    }
+
+    private fun configStates() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.passengersStateFlow.collect { state ->
+                when (state) {
+                    is ApiState.Loading -> {
+                        if (state.passengers.isEmpty()) {
+                            configLoading()
+                        } else {
+                            configEpoxyItems(passengers = state.passengers, failed = false)
+                        }
+                    }
+                    is ApiState.Failure -> {
+                        configEpoxyItems(passengers = state.passengers, failed = true)
+                    }
+                    is ApiState.Success -> {
+                        configEpoxyItems(passengers = state.passengers, failed = false)
+                    }
+                    is ApiState.Empty -> {
+                        // noting to do
+                    }
+                }
+            }
+        }
     }
 
     private fun configEpoxy() {
@@ -46,21 +72,9 @@ class MainActivity : AppCompatActivity() {
         EpoxyVisibilityTracker().attach(binding.passengerList)
     }
 
-    private fun observePassengers(passengers: List<PassengerModel>) {
+    private fun configEpoxyItems(passengers: List<PassengerModel>?, failed: Boolean = false) {
         binding.loadingView.visibility = View.GONE
         binding.passengerList.visibility = View.VISIBLE
-        configEpoxyItems(passengers = passengers)
-    }
-
-    private fun observeFailed(isFailed: Boolean) {
-        configEpoxyItems(passengers = viewModel.passengersLiveData.value, failed = isFailed)
-    }
-
-    private fun observeLoading(isLoading: Boolean) {
-        configEpoxyItems(passengers = viewModel.passengersLiveData.value, failed = !isLoading)
-    }
-
-    private fun configEpoxyItems(passengers: List<PassengerModel>?, failed: Boolean = false) {
         passengers?.let {
             binding.passengerList.withModels {
                 // passenger view holder
@@ -76,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                 if (failed) {
                     // retry view holder
                     EpoxyRetry().setClickActionsCallBack {
-                        viewModel.retryFetchPassengers()
+                        viewModel.fetchPassengers()
                     }.apply {
                         id("retry")
                     }.addTo(this)
@@ -88,6 +102,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun configLoading() {
+        binding.loadingView.visibility = View.VISIBLE
+        binding.passengerList.visibility = View.GONE
     }
 
 }
