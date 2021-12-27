@@ -4,6 +4,7 @@ import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import com.airbnb.epoxy.EpoxyModel
+import ir.rezarasuolzadeh.passengers.utils.enums.VisibilityState
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -11,9 +12,11 @@ abstract class BaseEpoxy(
     @LayoutRes private val layoutRes: Int
 ) : EpoxyModel<View>() {
 
-    protected var view: View? = null
-
     abstract fun bind()
+
+    private var visibilityChanges: ((VisibilityState) -> Unit)? = null
+
+    protected var view: View? = null
 
     override fun bind(view: View) {
         this.view = view
@@ -24,9 +27,7 @@ abstract class BaseEpoxy(
         this.view = null
     }
 
-    private var visibilityChanges: ((ItemVisibilityState) -> Unit)? = null
-
-    fun setVisibilityChanges(call: (ItemVisibilityState) -> Unit): BaseEpoxy {
+    fun setVisibilityChanges(call: (VisibilityState) -> Unit): BaseEpoxy {
         visibilityChanges = call
         return this
     }
@@ -35,9 +36,6 @@ abstract class BaseEpoxy(
 
     protected fun <V : View> bind(@IdRes id: Int) = object : ReadOnlyProperty<BaseEpoxy, V> {
         override fun getValue(thisRef: BaseEpoxy, property: KProperty<*>): V {
-            // This is not efficient because it looks up the view by id every time (it loses
-            // the pattern of a "holder" to cache that look up). But it is simple to use and could
-            // be optimized with a map
             @Suppress("UNCHECKED_CAST")
             return view?.findViewById(id) as V?
                 ?: throw IllegalStateException("View ID $id for '${property.name}' not found.")
@@ -48,14 +46,10 @@ abstract class BaseEpoxy(
         super.onVisibilityStateChanged(visibilityState, view)
         visibilityChanges?.invoke(
             when (visibilityState) {
-                ItemVisibilityState.VISIBLE.state -> ItemVisibilityState.VISIBLE
-                else -> ItemVisibilityState.INVISIBLE
+                VisibilityState.VISIBLE.state -> VisibilityState.VISIBLE
+                else -> VisibilityState.INVISIBLE
             }
         )
     }
 
-    enum class ItemVisibilityState(val state: Int) {
-        VISIBLE(0),
-        INVISIBLE(1)
-    }
 }
