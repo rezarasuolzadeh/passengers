@@ -30,10 +30,9 @@ class PassengerRepository @Inject constructor(
         ).data
 
         passengers.addAll(response)
+        currentPage++
 
         emit(passengers)
-
-        currentPage++
     }.flowOn(Dispatchers.IO)
 
 }

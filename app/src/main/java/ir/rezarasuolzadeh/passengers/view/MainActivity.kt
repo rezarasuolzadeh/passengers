@@ -48,14 +48,24 @@ class MainActivity : BaseActivity() {
                         if (state.passengers.isEmpty()) {
                             configLoading()
                         } else {
-                            configEpoxyItems(passengers = state.passengers, failed = false)
+                            configEpoxyItems(
+                                passengers = state.passengers,
+                                failed = false,
+                                isLoading = true
+                            )
                         }
                     }
                     is ApiState.Failure -> {
-                        configEpoxyItems(passengers = state.passengers, failed = true)
+                        configEpoxyItems(
+                            passengers = state.passengers,
+                            failed = true
+                        )
                     }
                     is ApiState.Success -> {
-                        configEpoxyItems(passengers = state.passengers, failed = false)
+                        configEpoxyItems(
+                            passengers = state.passengers,
+                            failed = false
+                        )
                     }
                 }
             }
@@ -71,7 +81,11 @@ class MainActivity : BaseActivity() {
         EpoxyVisibilityTracker().attach(binding.passengerList)
     }
 
-    private fun configEpoxyItems(passengers: List<PassengerModel>?, failed: Boolean = false) {
+    private fun configEpoxyItems(
+        passengers: List<PassengerModel>?,
+        failed: Boolean = false,
+        isLoading: Boolean = false
+    ) {
         binding.loadingView.gone()
         binding.passengerList.visible()
         passengers?.let {
@@ -82,8 +96,10 @@ class MainActivity : BaseActivity() {
                         id(passenger.id)
                     }
                 }
-                withLoadMore(models, 5) {
-                    viewModel.fetchPassengers()
+                withLoadMore(models, 10) {
+                    if (!isLoading) {
+                        viewModel.fetchPassengers()
+                    }
                 }
 
                 if (failed) {
