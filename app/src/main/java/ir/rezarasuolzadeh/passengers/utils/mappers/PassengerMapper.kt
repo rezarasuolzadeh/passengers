@@ -15,7 +15,7 @@ class PassengerMapper @Inject constructor(
         return PassengerModel(
             trips = response.trips ?: -1,
             V = response.V ?: -1,
-            name = response.name ?: "",
+            name = response.name ?: "NO NAME",
             id = response.id ?: "",
             airline = response.airline.map { airlineMapper.mapResponseToModel(it) }
         )
